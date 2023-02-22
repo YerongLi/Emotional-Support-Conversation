@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=6,7 python train.py \
+CUDA_VISIBLE_DEVICES=2,3 python train.py \
     --config_name vanilla \
     --inputter_name vanilla \
     --eval_input_file ./_reformat/valid.txt \
