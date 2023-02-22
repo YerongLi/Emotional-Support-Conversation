@@ -7,7 +7,7 @@ CUDA_VISIBLE_DEVICES=4,5,6,7 python train.py \
     --max_decoder_input_length 45 \
     --train_batch_size 2 \
     --gradient_accumulation_steps 1 \
-    --eval_batch_size 16 \
+    --eval_batch_size 24 \
     --learning_rate 5e-5 \
     --num_epochs 2 \
     --warmup_steps 100 \
