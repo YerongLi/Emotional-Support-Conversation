@@ -1,11 +1,11 @@
-CUDA_VISIBLE_DEVICES=5 python train.py \
+CUDA_VISIBLE_DEVICES=5,6 python train.py \
     --config_name vanilla_dialogpt \
     --inputter_name vanilla \
     --eval_input_file ./_reformat/valid.txt \
     --seed 13 \
     --max_input_length 180 \
     --max_decoder_input_length 45 \
-    --train_batch_size 16 \
+    --train_batch_size 2 \
     --gradient_accumulation_steps 1 \
     --eval_batch_size 16 \
     --learning_rate 5e-5 \

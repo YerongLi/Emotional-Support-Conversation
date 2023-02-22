@@ -70,6 +70,8 @@ test = data[dev_size: dev_size + test_size]
 train = data[dev_size + test_size:]
 
 print('train', len(train))
+
+# {"emotion_type": "anxiety", "problem_type": "job crisis", "situation": "I am on short term disability and I am afraid I will lose my job if I don't go back soon.", "dialog": [{"text": "Hello good afternoon.", "speaker": "usr"}, {"text": "Hi, good afternoon.", "speaker": "sys", "strategy": "Question"}, {"text": "I'm feeling anxious that I am going to lose my job.", "speaker": "usr"}, {"text": "Losing a job is always anxious.", "speaker": "sys", "strategy": "Reflection of feelings"}
 with open('./train.txt', 'w') as f:
     for e in train:
         f.write(json.dumps(e) + '\n')
