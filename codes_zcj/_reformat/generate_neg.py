@@ -23,7 +23,7 @@ instruction = f'Instruction: given a dialog context, you need to response empath
 knowledge = ''
 random.seed(13)
 global_count = 0
-
+MOD = 4
 def _norm(x):
     return ' '.join(x.strip().split())
 
@@ -58,11 +58,13 @@ def process_data(d):
                 'speaker': 'sys',
                 'strategy': uttr['annotation']['strategy'],
             })
-        if '?' == text[-1]:
-            print(text)
-            print('generation: ')
-            response = generate(instruction, knowledge, history)
-            print(response)
+            if '?' == text[-1]:
+                if 0 == global_count:
+                    print(text)
+                    print('generation: ')
+                    response = generate(instruction, knowledge, history)
+                    print(response)
+                global_count+= (global_count + 1) % MOD
 
 
     res = {
@@ -78,7 +80,7 @@ def process_data(d):
 data = []
 
 # with mp.Pool(processes=mp.cpu_count()) as pool:
-for e in original:
+for e in tqdm.tqdm(original):
     data.append(process_data(e))
 # with mp.Pool(processes=1) as pool:
 #     for e in pool.imap(process_data, tqdm.tqdm(original, total=len(original))):
@@ -100,18 +102,18 @@ print("There are ", global_count, "Quesiont markers")
 print('train', len(train))
 
 # # {"emotion_type": "anxiety", "problem_type": "job crisis", "situation": "I am on short term disability and I am afraid I will lose my job if I don't go back soon.", "dialog": [{"text": "Hello good afternoon.", "speaker": "usr"}, {"text": "Hi, good afternoon.", "speaker": "sys", "strategy": "Question"}, {"text": "I'm feeling anxious that I am going to lose my job.", "speaker": "usr"}, {"text": "Losing a job is always anxious.", "speaker": "sys", "strategy": "Reflection of feelings"}
-# with open('./train.txt', 'w') as f:
+# with open('./train_neg.txt', 'w') as f:
 #     for e in train:
 #         f.write(json.dumps(e) + '\n')
 # with open('./sample.json', 'w') as f:
 #     json.dump(train[:10], f, ensure_ascii=False, indent=2)
 
 # print('valid', len(valid))
-# with open('./valid.txt', 'w') as f:
+# with open('./valid_neg.txt', 'w') as f:
 #     for e in valid:
 #         f.write(json.dumps(e) + '\n')
 
 # print('test', len(test))
-# with open('./test.txt', 'w') as f:
+# with open('./test_neg.txt', 'w') as f:
 #     for e in test:
 #         f.write(json.dumps(e) + '\n')
