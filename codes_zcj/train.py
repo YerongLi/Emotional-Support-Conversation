@@ -262,13 +262,16 @@ if args.local_rank == -1 or get_rank() == 0:
         pbar = tqdm.tqdm(total=args.num_optim_steps, desc=f"training")
     else:
         pbar = None
-
+DEBUG = True
 while True:
     model.train()
     (tr_loss, tr_ppl, mean_ppl, nb_tr_examples, nb_tr_steps) = 0.0, 0.0, 0.0, 0, 0
     n_token_real, n_token_total = 0, 0
     train_start_time_epoch = time.time()
+    if DEBUG : counter = 0
     for batch in train_dataloader:
+        if DEBUG: counter+=1
+        if DEBUG: if counter > 10 break;
         # activate new training mode
         batch = {k: v.to(device) if isinstance(v, Tensor) else v for k, v in batch.items()}
         batch.update({'global_step': global_step})
