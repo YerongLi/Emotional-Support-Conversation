@@ -78,9 +78,11 @@ def process_data(d):
 data = []
 
 # with mp.Pool(processes=mp.cpu_count()) as pool:
-with mp.Pool(processes=1) as pool:
-    for e in pool.imap(process_data, tqdm.tqdm(original, total=len(original))):
-        data.append(e)
+for e in original:
+    data.append(process_data(e))
+# with mp.Pool(processes=1) as pool:
+#     for e in pool.imap(process_data, tqdm.tqdm(original, total=len(original))):
+#         data.append(e)
 
 emotions = Counter([e['emotion_type'] for e in data])
 problems = Counter([e['problem_type'] for e in data])
