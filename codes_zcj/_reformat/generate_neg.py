@@ -45,7 +45,7 @@ def process_data(d):
     history = []
     for uttr in d:
         text = _norm(uttr['content'])
-        history.append(context)
+        history.append(text)
         role = uttr['speaker']
         if role == 'seeker':
             dial.append({
@@ -61,7 +61,7 @@ def process_data(d):
         if '?' == text[-1]:
             print(text)
             print('generation: ')
-            response = generate(instruction, knowledge, dialog)
+            response = generate(instruction, knowledge, history)
             print(response)
 
 
