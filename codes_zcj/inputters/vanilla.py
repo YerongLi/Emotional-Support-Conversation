@@ -19,16 +19,16 @@ class Inputter(object):
         # prepare
         self.convert_data_to_inputs = convert_data_to_inputs
         self.convert_inputs_to_features = convert_inputs_to_features
-        
+
         # train
         self.train_sampler = BucketSampler
         self.train_dataset = FeatureDataset
         self.train_dataloader = BucketingDataLoader
         self.train_distributed_dataloader = DistributedBucketingDataLoader
-        
+
         # valid
         self.valid_dataloader = DynamicBatchingLoader
-        
+
         # infer
         self.prepare_infer_batch = prepare_infer_batch
         self.infer_dataloader = get_infer_batch
@@ -37,13 +37,13 @@ class Inputter(object):
 # basic utils
 class InputFeatures(object):
     def __init__(
-        self,
-        input_ids,
-        decoder_input_ids, labels,
+            self,
+            input_ids,
+            decoder_input_ids, labels,
     ):
         self.input_ids = input_ids
         self.input_length = len(input_ids)
-        
+
         self.decoder_input_ids = decoder_input_ids
         self.decoder_input_length = len(decoder_input_ids)
         self.labels = labels
@@ -52,17 +52,17 @@ class InputFeatures(object):
 
 
 def featurize(
-    bos, eos,
-    context, max_input_length,
-    response, max_decoder_input_length,
+        bos, eos,
+        context, max_input_length,
+        response, max_decoder_input_length,
 ):
     context = [c + [eos] for c in context]
     input_ids = sum(context, [])[:-1]
     input_ids = input_ids[-max_input_length:]
-    
+
     labels = (response + [eos])[:max_decoder_input_length]
     decoder_input_ids = [bos] + labels[:-1]
-    
+
     assert len(decoder_input_ids) == len(labels), decoder_input_ids[1:] == labels[:-1]
 
     return InputFeatures(
@@ -73,21 +73,21 @@ def featurize(
 
 def convert_data_to_inputs(data, toker: PreTrainedTokenizer, **kwargs):
     process = lambda x: toker.convert_tokens_to_ids(toker.tokenize(x))
-    
+
     dialog = data['dialog']
     inputs = []
     context = []
-    
+
     for i in range(len(dialog)):
         text = _norm(dialog[i]['text'])
         text = process(text)
-        
+        # The initial utterance from the system bot is not valid
         if i > 0 and dialog[i]['speaker'] == 'sys':
             res = {
                 'context': context.copy(),
                 'response': text,
             }
-            
+
             inputs.append(res)
 
         context = context + [text]
@@ -103,7 +103,7 @@ def convert_inputs_to_features(inputs, toker, **kwargs):
     max_input_length = kwargs.get('max_input_length')
     assert kwargs.get('max_decoder_input_length', None) is not None, 'you should give max_decoder_input_length'
     max_decoder_input_length = kwargs.get('max_decoder_input_length')
-    
+
     pad = toker.pad_token_id
     if pad is None:
         pad = toker.eos_token_id
@@ -116,7 +116,7 @@ def convert_inputs_to_features(inputs, toker, **kwargs):
     if eos is None:
         eos = toker.sep_token_id
         assert eos is not None, 'either eos_token_id or sep_token_id should be provided'
-    
+
     features = []
     for i in range(len(inputs)):
         ipt = inputs[i]
@@ -154,37 +154,38 @@ class FeatureDataset(Dataset):
         if eos is None:
             eos = toker.sep_token_id
             assert eos is not None, 'either eos_token_id or sep_token_id should be provided'
-        
+
         input_ids = pad_sequence([torch.tensor(f.input_ids, dtype=torch.long) for f in features],
-                          batch_first=True, padding_value=pad)
+                                 batch_first=True, padding_value=pad)
         attention_mask = pad_sequence([torch.tensor([1.] * f.input_length, dtype=torch.float) for f in features],
-                          batch_first=True, padding_value=0.)
+                                      batch_first=True, padding_value=0.)
         input_length = torch.tensor([f.input_length for f in features], dtype=torch.long)
-        
+
         if not infer:
             decoder_input_ids = pad_sequence([torch.tensor(f.decoder_input_ids, dtype=torch.long) for f in features],
-                              batch_first=True, padding_value=pad)
+                                             batch_first=True, padding_value=pad)
             labels = pad_sequence([torch.tensor(f.labels, dtype=torch.long) for f in features],
-                              batch_first=True, padding_value=-100)
+                                  batch_first=True, padding_value=-100)
         else:
             decoder_input_ids = torch.tensor([[f.decoder_input_ids[0]] for f in features], dtype=torch.long)
             labels = None
-        
+
         res = {
             'input_ids': input_ids,
             'attention_mask': attention_mask,
-            #'input_length': input_length,
-            
+            # 'input_length': input_length,
+
             'decoder_input_ids': decoder_input_ids,
             'labels': labels,
         }
-        
+
         return res
 
 
 # for validation
 class DynamicBatchingLoader(object):
     """ this loader takes raw text file, used for validate perplexity """
+
     def __init__(self, corpus_file, toker, batch_size, **kwargs):
         self.corpus = corpus_file
         self.toker = toker
@@ -207,7 +208,7 @@ class DynamicBatchingLoader(object):
         try:
             with open(self.corpus, 'r', encoding="utf-8") as f:
                 reader = f.readlines()
-            
+
             features = []
             for line in tqdm.tqdm(reader, total=len(reader), desc=f"validating"):
                 data = json.loads(line)
@@ -217,14 +218,14 @@ class DynamicBatchingLoader(object):
                     batch = self._batch_feature(features)
                     yield batch
                     features = []
-                    
+
             if len(features) > 0:
                 batch = self._batch_feature(features)
                 yield batch
-                
+
         except StopIteration:
             pass
-    
+
     def _batch_feature(self, features):
         return FeatureDataset.collate(features, self.toker)
 
@@ -237,7 +238,7 @@ class DynamicBatchingLoader(object):
 # for inference
 def prepare_infer_batch(features, toker, interact=None):
     res = FeatureDataset.collate(features, toker, True)
-    
+
     res['batch_size'] = res['input_ids'].size(0)
 
     return res
@@ -249,7 +250,7 @@ def get_infer_batch(infer_input_file, toker, **kwargs):
 
     with open(infer_input_file, 'r', encoding="utf-8") as f:
         reader = f.readlines()
-    
+
     features = []
     sample_ids = []
     posts = []
@@ -264,7 +265,7 @@ def get_infer_batch(infer_input_file, toker, **kwargs):
             posts.append(toker.decode(ipt['context'][-1]))
             references.append(toker.decode(ipt['response']))
             sample_ids.append(sample_id)
-    
+
             if len(sample_ids) == infer_batch_size:
                 yield prepare_infer_batch(features, toker), posts, references, sample_ids
                 features = []
