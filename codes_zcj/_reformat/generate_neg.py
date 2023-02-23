@@ -23,7 +23,7 @@ instruction = f'Instruction: given a dialog context, you need to response empath
 knowledge = ''
 random.seed(13)
 global_count = 0
-MOD = 4
+MOD = 40
 def _norm(x):
     return ' '.join(x.strip().split())
 
