@@ -41,7 +41,7 @@ def process_data(d):
                 'speaker': 'sys',
                 'strategy': uttr['annotation']['strategy'],
             })
-            print(text)
+            print(text[-1])
     res = {
         'emotion_type': emotion,
         'problem_type': problem,
