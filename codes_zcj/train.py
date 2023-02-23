@@ -391,7 +391,7 @@ while True:
             # only rank 0 process evaluate
             torch.save(model.state_dict(), join(output_dir, f'epoch-{epoch}.bin'))
             toker.save_vocabulary(output_dir)
-            model.config.to_json_file(join(output_dir, f'config.json'))
+            model.module.onfig.to_json_file(join(output_dir, f'config.json'))
     
             eval_loss, eval_ppl, eval_samples, *_ = eval_model_loss(
                 model=model,
