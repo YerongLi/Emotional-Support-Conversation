@@ -65,7 +65,7 @@ def process_data(d):
                     print('generation: ')
                     response = generate(instruction, knowledge, history)
                     print(response)
-                global_count+= (global_count + 1) % MOD
+                global_count = (global_count + 1) % MOD
 
 
     res = {
@@ -81,7 +81,7 @@ def process_data(d):
 data = []
 
 # with mp.Pool(processes=mp.cpu_count()) as pool:
-for e in tqdm.tqdm(original):
+for e in tqdm.tqdm(original):2
     data.append(process_data(e))
 # with mp.Pool(processes=1) as pool:
 #     for e in pool.imap(process_data, tqdm.tqdm(original, total=len(original))):
