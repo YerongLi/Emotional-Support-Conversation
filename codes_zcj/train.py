@@ -271,7 +271,7 @@ while True:
     if DEBUG : counter = 0
     for batch in train_dataloader:
         if DEBUG: counter+=1
-        if DEBUG: if counter > 10 break;
+        if DEBUG: if counter > 10: break;
         # activate new training mode
         batch = {k: v.to(device) if isinstance(v, Tensor) else v for k, v in batch.items()}
         batch.update({'global_step': global_step})
