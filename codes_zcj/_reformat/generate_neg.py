@@ -113,19 +113,19 @@ train = data[dev_size + test_size:]
 print("There are ", global_count, "Quesiont markers")
 print('train', len(train))
 
-# # {"emotion_type": "anxiety", "problem_type": "job crisis", "situation": "I am on short term disability and I am afraid I will lose my job if I don't go back soon.", "dialog": [{"text": "Hello good afternoon.", "speaker": "usr"}, {"text": "Hi, good afternoon.", "speaker": "sys", "strategy": "Question"}, {"text": "I'm feeling anxious that I am going to lose my job.", "speaker": "usr"}, {"text": "Losing a job is always anxious.", "speaker": "sys", "strategy": "Reflection of feelings"}
-# with open('./train_neg.txt', 'w') as f:
-#     for e in train:
-#         f.write(json.dumps(e) + '\n')
-# with open('./sample.json', 'w') as f:
-#     json.dump(train[:10], f, ensure_ascii=False, indent=2)
+# {"emotion_type": "anxiety", "problem_type": "job crisis", "situation": "I am on short term disability and I am afraid I will lose my job if I don't go back soon.", "dialog": [{"text": "Hello good afternoon.", "speaker": "usr"}, {"text": "Hi, good afternoon.", "speaker": "sys", "strategy": "Question"}, {"text": "I'm feeling anxious that I am going to lose my job.", "speaker": "usr"}, {"text": "Losing a job is always anxious.", "speaker": "sys", "strategy": "Reflection of feelings"}
+with open('./train_neg.txt', 'w') as f:
+    for e in train:
+        f.write(json.dumps(e) + '\n')
+with open('./sample.json', 'w') as f:
+    json.dump(train[:10], f, ensure_ascii=False, indent=2)
 
-# print('valid', len(valid))
-# with open('./valid_neg.txt', 'w') as f:
-#     for e in valid:
-#         f.write(json.dumps(e) + '\n')
+print('valid', len(valid))
+with open('./valid_neg.txt', 'w') as f:
+    for e in valid:
+        f.write(json.dumps(e) + '\n')
 
-# print('test', len(test))
-# with open('./test_neg.txt', 'w') as f:
-#     for e in test:
-#         f.write(json.dumps(e) + '\n')
+print('test', len(test))
+with open('./test_neg.txt', 'w') as f:
+    for e in test:
+        f.write(json.dumps(e) + '\n')
