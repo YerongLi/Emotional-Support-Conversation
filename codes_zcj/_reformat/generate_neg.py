@@ -23,7 +23,7 @@ instruction = f'Instruction: given a dialog context, you need to response empath
 knowledge = ''
 random.seed(13)
 global_count = 0
-MOD = 40
+MOD = 160
 def _norm(x):
     return ' '.join(x.strip().split())
 
@@ -52,6 +52,7 @@ def process_data(d):
             dial.append({
                 'text': text,
                 'speaker': 'usr',
+                'div': 0,
             })
         else:
             dial.append({
@@ -65,6 +66,16 @@ def process_data(d):
                     print('generation: ')
                     response = generate(instruction, knowledge, history)
                     print(response)
+                    dial.append({
+                        'text': response,
+                        'speaker': 'usr',
+                        'div': 1,
+                    })
+                dial.append({
+                'text':f'This is not what I want. {text}',
+                'speaker': 'sys',
+                'strategy': uttr['annotation']['strategy'],
+            })
                 global_count = (global_count + 1) % MOD
 
 

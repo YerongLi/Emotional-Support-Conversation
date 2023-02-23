@@ -33,7 +33,7 @@ def process_data(d):
             dial.append({
                 'text': text,
                 'speaker': 'usr',
-                'div': 1,
+                'div': 0,
             })
         else:
             dial.append({
