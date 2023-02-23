@@ -34,6 +34,7 @@ strat2id = {strat: i for i, strat in enumerate(strategies)}
 original = json.load(open('./ESConv.json'))
 
 def process_data(d):
+    global global_count
     emotion = d['emotion_type']
     problem = d["problem_type"]
     situation = d['situation']
