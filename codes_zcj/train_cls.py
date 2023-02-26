@@ -13,7 +13,6 @@ import time
 
 import torch
 import tqdm
-import utils.DEBUG as DEBUG
 from torch import Tensor
 from torch.distributed import get_rank, get_world_size
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
@@ -22,6 +21,7 @@ from transformers.trainer_utils import set_seed
 from inputters import inputters
 from os.path import join
 from utils.building_utils import boolean_string, build_model, deploy_model
+from utils import DEBUG
 from utils.distributed import all_reduce_and_rescale_tensors, all_gather_list
 from utils.eval_utils import eval_model_loss
 
