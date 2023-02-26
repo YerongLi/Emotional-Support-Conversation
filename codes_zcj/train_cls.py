@@ -270,6 +270,8 @@ while True:
     train_start_time_epoch = time.time()
     for batch in train_dataloader:
         # activate new training mode
+        print('batch')
+        print(batch.keys())
         batch = {k: v.to(device) if isinstance(v, Tensor) else v for k, v in batch.items()}
         batch.update({'global_step': global_step})
         batch.update({'epoch': epoch})
