@@ -1,4 +1,4 @@
-python prepare.py \
+python prepare_neg.py \
     --config_name vanilla_dialogpt_neg \
     --inputter_name vanilla \
     --train_input_file ./_reformat/train.txt \
