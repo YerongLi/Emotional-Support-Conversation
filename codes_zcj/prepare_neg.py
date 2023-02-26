@@ -53,6 +53,8 @@ kwargs = {
 }
 
 def process_data(line):
+    print('line')
+    print(line)
     data = json.loads(line)
     inputs = inputter.convert_data_to_inputs(
         data=data,
