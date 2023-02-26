@@ -6,20 +6,21 @@ import argparse
 import datetime
 import json
 import logging
+import numpy as np
 import os
 import sys
 import time
-from os.path import join
 
-import numpy as np
 import torch
 import tqdm
+import utils.DEBUG as DEBUG
 from torch import Tensor
 from torch.distributed import get_rank, get_world_size
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from transformers.trainer_utils import set_seed
 
 from inputters import inputters
+from os.path import join
 from utils.building_utils import boolean_string, build_model, deploy_model
 from utils.distributed import all_reduce_and_rescale_tensors, all_gather_list
 from utils.eval_utils import eval_model_loss
@@ -268,10 +269,13 @@ while True:
     (tr_loss, tr_ppl, mean_ppl, nb_tr_examples, nb_tr_steps) = 0.0, 0.0, 0.0, 0, 0
     n_token_real, n_token_total = 0, 0
     train_start_time_epoch = time.time()
+    if DEBUG : counter = 0
     for batch in train_dataloader:
+        if DEBUG: counter+= 1
+        if DEBUG and counter > 10: break
         # activate new training mode
-        print('batch')
-        print(batch.keys())
+        print('batch["labels"]')
+        print(batch['labels'])
         batch = {k: v.to(device) if isinstance(v, Tensor) else v for k, v in batch.items()}
         batch.update({'global_step': global_step})
         batch.update({'epoch': epoch})
