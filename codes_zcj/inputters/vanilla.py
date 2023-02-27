@@ -73,7 +73,16 @@ def featurize(
 
 
 def convert_data_to_inputs(data, toker: PreTrainedTokenizer, **kwargs):
-    # logging.info('convert_data_to_inputs')
+    '''
+
+    Args:
+        data: input dialog data, data['dialog'] contains the dialog
+        toker: tokenizer
+        **kwargs:
+
+    Returns: list of {'context', 'response', 'dev'} pairs
+
+    '''
     process = lambda x: toker.convert_tokens_to_ids(toker.tokenize(x))
 
     dialog = data['dialog']
@@ -83,19 +92,20 @@ def convert_data_to_inputs(data, toker: PreTrainedTokenizer, **kwargs):
     for i in range(len(dialog)):
         text = _norm(dialog[i]['text'])
         text = process(text)
+        if dialog[i]['speaker'] == 'usr':
+            # TODO Change div to dev
+            deviation = dialog[i]['div']
         # The initial utterance from the system bot is not valid
         if i > 0 and dialog[i]['speaker'] == 'sys':
             res = {
                 'context': context.copy(),
                 'response': text,
+                'dev': deviation
             }
 
             inputs.append(res)
 
         context = context + [text]
-    # print(data)
-    # print(inputs)
-    # logging.info('convert_data_to_inputs : return inputs')
     return inputs
 
 

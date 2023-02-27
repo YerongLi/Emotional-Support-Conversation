@@ -49,12 +49,15 @@ def process_data(d):
         history.append(text)
         role = uttr['speaker']
         if role == 'seeker':
+            # If it is the user's utterance
             dial.append({
                 'text': text,
                 'speaker': 'usr',
+                # TODO Change div to dev
                 'div': 0,
             })
         else:
+            # If it is the system's utterance
             dial.append({
                 'text': text,
                 'speaker': 'sys',
@@ -69,6 +72,7 @@ def process_data(d):
                     dial.append({
                         'text': response,
                         'speaker': 'usr',
+                        # TODO Change div to dev
                         'div': 1,
                     })
                 dial.append({
