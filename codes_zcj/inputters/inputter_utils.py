@@ -62,7 +62,6 @@ class BucketingDataLoader(object):
         inputter_name = kwargs.pop('inputter_name')
         config_name = kwargs.pop('config_name')
         logging.info(f'loading data in the directory : ./DATA/{inputter_name}.{config_name}/data.pkl')
-        if DEBUG : print('type(feature_dataset)', type(feature_dataset))
         with open(f'./DATA/{inputter_name}.{config_name}/data.pkl', 'rb') as f:
             self.data = pickle.load(f)
         self.toker = toker
@@ -79,7 +78,6 @@ class BucketingDataLoader(object):
             lens.append(feat.input_len)
 
         dataset = self.feature_dataset(trunc_chunk)
-        if DEBUG: print('dataset', dataset)
         sampler = BucketSampler(lens, self.bucket_size, self.batch_size,
                                 droplast=True, shuffle=self.shuffle)
         loader = DataLoader(dataset, batch_sampler=sampler,
