@@ -1,7 +1,7 @@
 # coding=utf-8
 import gzip
 import json
-import loggin
+import logging
 import math
 import os
 import pickle
