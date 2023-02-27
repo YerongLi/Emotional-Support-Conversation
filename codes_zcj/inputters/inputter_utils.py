@@ -79,6 +79,7 @@ class BucketingDataLoader(object):
             lens.append(feat.input_len)
 
         dataset = self.feature_dataset(trunc_chunk)
+        if DEBUG: print('dataset', dataset)
         sampler = BucketSampler(lens, self.bucket_size, self.batch_size,
                                 droplast=True, shuffle=self.shuffle)
         loader = DataLoader(dataset, batch_sampler=sampler,
