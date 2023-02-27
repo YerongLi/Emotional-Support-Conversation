@@ -88,7 +88,8 @@ def convert_data_to_inputs(data, toker: PreTrainedTokenizer, **kwargs):
     dialog = data['dialog']
     inputs = []
     context = []
-    print([dialog[i]['speaker'] for i in range(len(dialog))])
+    # First assume there is no deviation
+    deviation = 0
     for i in range(len(dialog)):
         text = _norm(dialog[i]['text'])
         text = process(text)
@@ -100,7 +101,7 @@ def convert_data_to_inputs(data, toker: PreTrainedTokenizer, **kwargs):
             res = {
                 'context': context.copy(),
                 'response': text,
-                # 'dev': deviation
+                'dev': deviation
             }
 
             inputs.append(res)
