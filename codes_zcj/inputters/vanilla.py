@@ -88,7 +88,7 @@ def convert_data_to_inputs(data, toker: PreTrainedTokenizer, **kwargs):
     dialog = data['dialog']
     inputs = []
     context = []
-
+    print([dialog[i]['speaker'] for i in range(len(dialog))])
     for i in range(len(dialog)):
         text = _norm(dialog[i]['text'])
         text = process(text)
