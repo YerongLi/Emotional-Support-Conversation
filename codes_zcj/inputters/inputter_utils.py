@@ -62,7 +62,7 @@ class BucketingDataLoader(object):
         inputter_name = kwargs.pop('inputter_name')
         config_name = kwargs.pop('config_name')
         logging.info(f'loading data in the directory : ./DATA/{inputter_name}.{config_name}/data.pkl')
-        print(type(feature_dataset))
+        if DEBUG : print('type(feature_dataset)', type(feature_dataset))
         with open(f'./DATA/{inputter_name}.{config_name}/data.pkl', 'rb') as f:
             self.data = pickle.load(f)
         self.toker = toker
