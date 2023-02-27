@@ -41,6 +41,7 @@ class InputFeatures(object):
             self,
             input_ids,
             decoder_input_ids, labels,
+            dev_label = 0,
     ):
         self.input_ids = input_ids
         self.input_length = len(input_ids)
@@ -50,12 +51,13 @@ class InputFeatures(object):
         self.labels = labels
 
         self.input_len = self.input_length + self.decoder_input_length
-
+        self.dev_label = dev_label
 
 def featurize(
         bos, eos,
         context, max_input_length,
         response, max_decoder_input_length,
+        dev_label,
 ):
     context = [c + [eos] for c in context]
     input_ids = sum(context, [])[:-1]
@@ -69,6 +71,7 @@ def featurize(
     return InputFeatures(
         input_ids,
         decoder_input_ids, labels,
+        dev_label,
     )
 
 
@@ -111,6 +114,16 @@ def convert_data_to_inputs(data, toker: PreTrainedTokenizer, **kwargs):
 
 
 def convert_inputs_to_features(inputs, toker, **kwargs):
+    '''
+
+    Args:
+        inputs: list of {'context', 'response', 'dev'} pairs
+        toker:
+        **kwargs:
+
+    Returns:
+
+    '''
     if len(inputs) == 0:
         return []
 
@@ -139,6 +152,7 @@ def convert_inputs_to_features(inputs, toker, **kwargs):
             bos, eos,
             ipt['context'], max_input_length,
             ipt['response'], max_decoder_input_length,
+            ipt['dev'],
         )
         features.append(feat)
     return features
