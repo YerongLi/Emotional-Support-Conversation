@@ -41,7 +41,7 @@ class InputFeatures(object):
             self,
             input_ids,
             decoder_input_ids, labels,
-            dev_label = 0,
+            dev_label,
     ):
         self.input_ids = input_ids
         self.input_length = len(input_ids)
