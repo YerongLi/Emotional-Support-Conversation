@@ -189,8 +189,6 @@ class FeatureDataset(Dataset):
         attention_mask = pad_sequence([torch.tensor([1.] * f.input_length, dtype=torch.float) for f in features],
                                       batch_first=True, padding_value=0.)
         input_length = torch.tensor([f.input_length for f in features], dtype=torch.long)
-        for f in features:
-            print(dir(f))
         dev = torch.tensor([f.dev for f in features], dtype=torch.int)
         if not infer:
             decoder_input_ids = pad_sequence([torch.tensor(f.decoder_input_ids, dtype=torch.long) for f in features],
