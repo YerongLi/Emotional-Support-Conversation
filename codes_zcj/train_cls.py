@@ -271,7 +271,7 @@ while True:
     train_start_time_epoch = time.time()
     if DEBUG : counter = 0
     for batch in train_dataloader:
-        if DEBUG: print(batch['dev'])
+        if DEBUG: print(batch.keys())
         if DEBUG: counter+= 1
         if DEBUG and counter > 10: break
         # activate new training mode
