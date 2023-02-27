@@ -100,7 +100,7 @@ def convert_data_to_inputs(data, toker: PreTrainedTokenizer, **kwargs):
             res = {
                 'context': context.copy(),
                 'response': text,
-                'dev': deviation
+                # 'dev': deviation
             }
 
             inputs.append(res)
