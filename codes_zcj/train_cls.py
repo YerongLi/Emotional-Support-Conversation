@@ -275,7 +275,7 @@ while True:
         if DEBUG and counter > 10: break
         # activate new training mode
         batch = {k: v.to(device) if isinstance(v, Tensor) else v for k, v in batch.items()}
-        if DEBUG
+        if DEBUG:
             for k in batch.keys():
                 print(k, type(batch[k]))
         batch.update({'global_step': global_step})
