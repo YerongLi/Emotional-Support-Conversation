@@ -51,7 +51,7 @@ class InputFeatures(object):
         self.labels = labels
 
         self.input_len = self.input_length + self.decoder_input_length
-        self.dev_label = dev_label
+        self.dev = dev_label
 
 def featurize(
         bos, eos,
