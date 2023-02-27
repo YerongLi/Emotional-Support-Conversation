@@ -4,17 +4,17 @@ import json
 import logging
 import tqdm
 import torch
-from typing import List
-from transformers.tokenization_utils import PreTrainedTokenizer
 import numpy as np
 import random
 from functools import partial
-from torch.utils.data import DataLoader, Sampler, Dataset
-from torch.nn.utils.rnn import pad_sequence
+
 from math import ceil
 from inputters.inputter_utils import _norm, BucketSampler, BucketingDataLoader, DistributedBucketingDataLoader
-
-
+from typing import List
+from transformers.tokenization_utils import PreTrainedTokenizer
+from torch.utils.data import DataLoader, Sampler, Dataset
+from torch.nn.utils.rnn import pad_sequence
+from utils import DEBUG
 class Inputter(object):
     def __init__(self):
         # prepare
