@@ -61,7 +61,7 @@ class Model(BaseModel, GPT2LMHeadModel):
             return_dict=return_dict,
         )
         hidden_states = transformer_outputs[0]
-        print('hidden_states', hidden_states)
+        print('hidden_states', hidden_states.shape)
         lm_logits = self.lm_head(hidden_states)
 
         masked_lm_loss = None
