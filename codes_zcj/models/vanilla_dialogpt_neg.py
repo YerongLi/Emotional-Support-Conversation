@@ -58,8 +58,6 @@ class Model(BaseModel, GPT2LMHeadModel):
 
         if labels is not None:
             loss_func = nn.CrossEntropyLoss()
-            print(logits.view(-1, self.num_labels))
-            print(dev.view(-1))
             loss = loss_func(logits.view(-1, self.num_labels), dev.view(-1))
 
             return TokenClassifierOutput(loss=loss, logits=logits, hidden_states=transformer_outputs.hidden_states,

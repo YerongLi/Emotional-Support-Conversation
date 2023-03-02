@@ -282,7 +282,6 @@ while True:
         if DEBUG: counter+= 1
         if DEBUG and counter > 10: break
         # activate new training mode
-        print(batch.keys())
         batch = {k: v.to(device) if isinstance(v, Tensor) else v for k, v in batch.items()}
         batch.update({'global_step': global_step})
         batch.update({'epoch': epoch})
@@ -290,6 +289,9 @@ while True:
         outputs = model(**batch)
 
         loss = outputs.loss
+
+        if n_gpu > 1:
+            loss = loss.mean()
         loss.backward()
 
         optimizer.step()
