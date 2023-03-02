@@ -85,6 +85,8 @@ with open(data_path, 'wb') as file:
         if counter != 0 or item.dev == 1 :
             tmp.append(item)
     processed_data = tmp
+    for item in processed_data
+        print(item.dev)
     pickle.dump(processed_data, file)
 kwargs.update({'n_examples': len(processed_data)})
 # save relevant information to reproduce
