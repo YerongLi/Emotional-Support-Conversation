@@ -291,6 +291,7 @@ for epoch in range(args.num_epochs):
         batch.update({'global_step': global_step})
         batch.update({'epoch': epoch})
         batch.update({'warmup_steps': args.warmup_steps})
+        print(batch.dev)
         outputs = model(**batch)
 
         loss = outputs.loss
