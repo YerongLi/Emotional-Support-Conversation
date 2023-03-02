@@ -266,6 +266,7 @@ epoch = 0
 #     else:
 #         pbar = None
 metric = load_metric("f1")
+if DEBUG: train_dataloader = list(train_dataloader)[:4000]
 
 num_training_steps = args.num_epochs * len(train_dataloader)
 progress_bar_train = tqdm.tqdm(range(num_training_steps))
@@ -283,7 +284,6 @@ for epoch in range(args.num_epochs):
     n_token_real, n_token_total = 0, 0
     train_start_time_epoch = time.time()
     if DEBUG : counter = 0
-    if DEBUG: train_dataloader = list(train_dataloader)[:10]
 
 
     for batch in train_dataloader:
@@ -316,6 +316,7 @@ for epoch in range(args.num_epochs):
         predictions = torch.argmax(logits, dim=-1)
         metric.add_batch(predictions=predictions, references=batch['dev'])
         progress_bar_eval.update(1)
+    print(metric.compute())
 # if args.local_rank == -1 or get_rank() == 0:
 #     if pbar is not None:
 #         pbar.close()
