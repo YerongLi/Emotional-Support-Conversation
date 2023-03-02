@@ -13,6 +13,8 @@ import time
 
 import torch
 import tqdm
+
+from datasets import load_metric
 from torch import Tensor
 from torch.distributed import get_rank, get_world_size
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
@@ -263,6 +265,7 @@ epoch = 0
 #         pbar = tqdm.tqdm(total=args.num_optim_steps, desc=f"training")
 #     else:
 #         pbar = None
+metric = load_metric("f1")
 
 num_training_steps = args.num_epochs * len(train_dataloader)
 progress_bar_train = tqdm.tqdm(range(num_training_steps))
@@ -302,6 +305,16 @@ for epoch in range(args.num_epochs):
         lr_scheduler.step()
         optimizer.zero_grad()
         progress_bar_train.update(1)
+
+    for batch in train_dataloader:
+        batch = {k: v.to(device) for k, v in batch.items()}
+        with torch.no_grad():
+            outputs = model(**batch)
+
+        logits = outputs.logits
+        predictions = torch.argmax(logits, dim=-1)
+        metric.add_batch(predictions=predictions, references=batch['labels'])
+        progress_bar_eval.update(1)
 # if args.local_rank == -1 or get_rank() == 0:
 #     if pbar is not None:
 #         pbar.close()
