@@ -75,6 +75,7 @@ def process_data(d):
                         # TODO Change div to dev
                         'div': 1,
                     })
+                    print('dev')
                 dial.append({
                 'text':f'This is not what I want. {text}',
                 'speaker': 'sys',
