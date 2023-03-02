@@ -313,7 +313,7 @@ for epoch in range(args.num_epochs):
 
         logits = outputs.logits
         predictions = torch.argmax(logits, dim=-1)
-        metric.add_batch(predictions=predictions, references=batch['labels'])
+        metric.add_batch(predictions=predictions, references=batch['dev'])
         progress_bar_eval.update(1)
 # if args.local_rank == -1 or get_rank() == 0:
 #     if pbar is not None:
