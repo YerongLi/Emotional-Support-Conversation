@@ -64,7 +64,7 @@ class Model(BaseModel, GPT2LMHeadModel):
             print(dev.view(-1))
             loss = loss_func(logits.view(-1, self.num_labels), dev.view(-1))
 
-            return TokenClassifierOutput(loss=loss, logits=logits, hidden_states=hidden_states.hidden_states,
+            return TokenClassifierOutput(loss=loss, logits=logits, hidden_states=transformer_outputs.hidden_states,
                                          attentions=sequence_outputs.attentions)
 
     @torch.no_grad()
