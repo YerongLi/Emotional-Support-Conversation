@@ -78,8 +78,13 @@ else:
 # save data
 data_path = f'{save_dir}/data.pkl'
 with open(data_path, 'wb') as file:
+    counter = 0
+    tmp = []
     for item in processed_data:
-        if item.dev == 1: print(item.dev)
+        counter = (count + 1)%3
+        if counter != 0 or item.dev == 1 :
+            tmp.append(item)
+    processed_data = tmp
     pickle.dump(processed_data, file)
 kwargs.update({'n_examples': len(processed_data)})
 # save relevant information to reproduce
