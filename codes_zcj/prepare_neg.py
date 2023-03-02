@@ -81,9 +81,9 @@ with open(data_path, 'wb') as file:
     counter = 0
     tmp = []
     for item in processed_data:
-        counter = (counter + 1)%3
         if item.dev == 1 or counter != 0:
             tmp.append(item)
+            counter = (counter + 1) % 3
     processed_data = tmp
     for item in processed_data:
         print(item.dev)
