@@ -266,7 +266,7 @@ epoch = 0
 #     else:
 #         pbar = None
 metric = load_metric("f1")
-if DEBUG: train_dataloader = list(train_dataloader)[:4000]
+if DEBUG: train_dataloader = list(train_dataloader)[:1000]
 
 num_training_steps = args.num_epochs * len(train_dataloader)
 progress_bar_train = tqdm.tqdm(range(num_training_steps))
@@ -283,7 +283,6 @@ for epoch in range(args.num_epochs):
     (tr_loss, tr_ppl, mean_ppl, nb_tr_examples, nb_tr_steps) = 0.0, 0.0, 0.0, 0, 0
     n_token_real, n_token_total = 0, 0
     train_start_time_epoch = time.time()
-
 
     for batch in train_dataloader:
         # activate new training mode
