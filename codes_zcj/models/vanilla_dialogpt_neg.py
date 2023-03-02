@@ -23,7 +23,6 @@ class Model(BaseModel, GPT2LMHeadModel):
         self,
         input_ids=None,
         attention_mask=None,
-        decoder_input_ids=None,
         past_key_values=None,
         labels=None,
         use_cache=None,
