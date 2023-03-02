@@ -14,10 +14,10 @@ from .PARAMS import SAMPLE, TEMPERATURE
 
 
 class Model(BaseModel, GPT2LMHeadModel):
-    def __init__(self, config: GPT2Config, num_labels):
+    def __init__(self, config: GPT2Config, num_labels=2):
         super().__init__(config)
         self.dropouts = nn.Dropout(0.1)
-        self.classifier = nn.Linear(768, num_labels )
+        self.classifier = nn.Linear(768, num_labels)
 
     def forward(
         self,
