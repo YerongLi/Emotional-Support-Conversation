@@ -42,8 +42,6 @@ class Model(BaseModel, GPT2LMHeadModel):
         # assert (self.training or validation) == (labels is not None) == (decoder_input_ids is not None)
         
         use_cache = use_cache if use_cache is not None else self.config.use_cache
-        if not self.training and not validation: # inference
-            use_cache = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         transformer_outputs = self.transformer(
