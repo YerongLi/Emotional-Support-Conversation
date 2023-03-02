@@ -270,6 +270,14 @@ while True:
     n_token_real, n_token_total = 0, 0
     train_start_time_epoch = time.time()
     if DEBUG : counter = 0
+    num_training_steps = args.num_epochs * len(train_dataloader)
+    progress_bar_train = tqdm(range(num_training_steps))
+    lr_scheduler = get_linear_schedule_with_warmup(
+        optimizer=optimizer,
+        num_warmup_steps=0,
+        num_training_steps=num_training_steps,
+
+    )
     for batch in train_dataloader:
         if DEBUG: counter+= 1
         if DEBUG and counter > 10: break
@@ -280,143 +288,14 @@ while True:
         batch.update({'epoch': epoch})
         batch.update({'warmup_steps': args.warmup_steps})
         outputs = model(**batch)
-        
-        loss = outputs.pop('all')
-        ppl = outputs.pop('ppl')
-        
-        if 'input_ids' in batch:
-            input_ids = batch['input_ids']
-        elif 'tgt_input_ids' in batch:
-            input_ids = batch['tgt_input_ids']
-        else:
-            assert 'src_input_ids' in batch
-            input_ids = batch['src_input_ids']
-        
-        if n_gpu > 1:
-            loss = loss.mean()
-            ppl = ppl.mean()
-        loss = loss / (args.train_batch_size * args.gradient_accumulation_steps / input_ids.shape[0])
-        if args.fp16:
-            with amp.scale_loss(loss, optimizer) as scaled_loss:
-                scaled_loss.backward()
-        else:
-            loss.backward()
-        
-        tmp_loss = float(loss.item()) * (args.train_batch_size * args.gradient_accumulation_steps / input_ids.shape[0])
-        tr_loss += tmp_loss
-        nb_tr_examples += input_ids.size(0)
-        nb_tr_steps += 1
-        mean_loss = tr_loss / nb_tr_steps
-        
-        if ppl.item() < INF:
-            tmp_ppl = ppl.item()
-        else:
-            tmp_ppl = mean_ppl
-        tr_ppl += tmp_ppl
-        mean_ppl = tr_ppl / nb_tr_steps
 
-        n_token_total += input_ids.shape[0] * input_ids.shape[1]
-        n_token_real += (input_ids != 0).sum().item()
+        loss = outputs.loss
+        loss.backward()
 
-        # gradient update
-        step += 1
-        if step % args.gradient_accumulation_steps == 0:
-            if args.fp16:
-                torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), args.max_grad_norm)
-            else:
-                torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
-
-            if args.local_rank != -1:
-                grads = [p.grad.data for p in model.parameters()
-                         if p.requires_grad and p.grad is not None]
-                all_reduce_and_rescale_tensors(grads, float(1))
-            
-            optimizer.step()
-            scheduler.step()
-            optimizer.zero_grad()
-            global_step += 1
-
-            # Print log info to file
-            if args.local_rank != -1:
-                mean_loss = sum(all_gather_list(mean_loss)) / get_world_size()
-                mean_ppl = sum(all_gather_list(mean_ppl)) / get_world_size()
-                n_token_real_all_proc = sum(all_gather_list(n_token_real))
-                n_token_total_all_proc = sum(all_gather_list(n_token_total))
-            else:
-                n_token_real_all_proc = n_token_real
-                n_token_total_all_proc = n_token_total
-
-            if args.local_rank == -1 or get_rank() == 0:
-                epoch_time = time.time() - train_start_time_epoch
-                if pbar is not None:
-                    pbar_str = ''#f"tok/s: {n_token_real_all_proc//epoch_time//1000}k "
-                    for k, v in outputs.items():
-                        if n_gpu > 1:
-                            pbar_str += f"{k}: {v.mean().item():.2f} "
-                        else:
-                            pbar_str += f"{k}: {v.item():.2f} "
-                    pbar_str += f"ppl: {mean_ppl:.2f} epoch: {epoch}"
-                    
-                    pbar.set_postfix_str(pbar_str)
-                    if args.num_epochs is not None:
-                        pbar.update(args.gradient_accumulation_steps)
-                    else:
-                        pbar.update(1)
-            
-                print(f'{epoch+1},{global_step+1},{step+1},{tmp_loss},{tmp_ppl},{mean_loss},{mean_ppl},'
-                      f'{n_token_real_all_proc},{n_token_total_all_proc},{epoch_time}', file=train_logger)
-
-            if args.num_epochs is None and global_step % args.valid_step == 0:# and epoch > 0:
-                if args.local_rank == -1 or get_rank() == 0:
-                    # only rank 0 process evaluate
-                    torch.save(model.state_dict(), join(output_dir, f'{global_step}.bin'))
-                    toker.save_vocabulary(output_dir)
-                    model.config.to_json_file(join(output_dir, f'config.json'))
-
-                    eval_loss, eval_ppl, eval_samples, *_ = eval_model_loss(
-                        model=model,
-                        eval_dataloader=eval_dataloader_loss,
-                        epoch_id=epoch,
-                        infer=False,
-                        args=args,
-                    )
-                    print(f'{epoch+1},{global_step+1},{step+1},{eval_loss},{eval_ppl}', file=eval_logger)
-                    logger.info('current learning rate: '
-                                + str(optimizer.param_groups[0]['lr']))
-                    model.train()
-            
-            if args.num_epochs is None and global_step >= args.num_optim_steps:
-                break
-        
-        if (step+1) % CACHE_EMPTY_STEP == 0:
-            torch.cuda.empty_cache()
-    
-    if args.num_epochs is not None:
-        if args.local_rank == -1 or get_rank() == 0:
-            # only rank 0 process evaluate
-            torch.save(model.state_dict(), join(output_dir, f'epoch-{epoch}.bin'))
-            toker.save_vocabulary(output_dir)
-            model.module.config.to_json_file(join(output_dir, f'config.json'))
-    
-            eval_loss, eval_ppl, eval_samples, *_ = eval_model_loss(
-                model=model,
-                eval_dataloader=eval_dataloader_loss,
-                epoch_id=epoch,
-                infer=False,
-                args=args,
-            )
-            print(f'{epoch},{global_step+1},{step+1},{eval_loss},{eval_ppl}', file=eval_logger)
-            logger.info('current learning rate: '
-                        + str(optimizer.param_groups[0]['lr']))
-            model.train()
-
-    if args.num_epochs is None and global_step >= args.num_optim_steps:
-        break
-    
-    epoch += 1
-    if args.num_epochs is not None and epoch == args.num_epochs:
-        break
-
+        optimizer.step()
+        lr_scheduler.step()
+        optimizer.zero_grad()
+        progress_bar_train.update(1)
 if args.local_rank == -1 or get_rank() == 0:
     if pbar is not None:
         pbar.close()
