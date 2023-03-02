@@ -27,7 +27,6 @@ class Model(BaseModel, GPT2LMHeadModel):
         labels=None,
         use_cache=None,
         return_dict=None,
-        validation=False,
         **kwargs
     ):
         assert self.toker is not None
