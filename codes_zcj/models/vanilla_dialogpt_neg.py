@@ -7,13 +7,17 @@ import torch.nn.functional as F
 from models.model_utils import BaseModel
 from transformers.generation_utils import top_k_top_p_filtering
 from transformers.models.gpt2 import (GPT2Config, GPT2LMHeadModel,)
+from transformers.modeling_outputs import TokenClassifierOutput
+
 from transformers.modeling_outputs import (CausalLMOutputWithCrossAttentions,)
 from .PARAMS import SAMPLE, TEMPERATURE
 
 
 class Model(BaseModel, GPT2LMHeadModel):
-    def __init__(self, config: GPT2Config):
+    def __init__(self, config: GPT2Config, num_labels):
         super().__init__(config)
+        self.dropouts = nn.Dropout(0.1)
+        self.classifier = nn.Linear(768, num_labels )
 
     def forward(
         self,
@@ -36,23 +40,7 @@ class Model(BaseModel, GPT2LMHeadModel):
         if not self.training and not validation: # inference
             use_cache = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        
-        if decoder_input_ids is not None:
-            if getattr(self.config, "gradient_checkpointing", False) and self.training:
-                input_ids = torch.cat([input_ids, decoder_input_ids], dim=-1)
-                labels = torch.cat([-100 * labels.new_ones(attention_mask.size()), labels], dim=-1)
-                attention_mask = torch.cat([attention_mask, attention_mask.new_ones(decoder_input_ids.size())], dim=-1)
-                use_cache = False
-            else:
-                transformer_outputs = self.transformer(
-                    input_ids,
-                    attention_mask=attention_mask,
-                    use_cache=True,
-                )
-                past_key_values = transformer_outputs[1]
-                input_ids = decoder_input_ids
-                attention_mask = torch.cat([attention_mask, attention_mask.new_ones(input_ids.size())], dim=-1)
-        
+
         transformer_outputs = self.transformer(
             input_ids,
             past_key_values=past_key_values,
@@ -61,40 +49,17 @@ class Model(BaseModel, GPT2LMHeadModel):
             return_dict=return_dict,
         )
         hidden_states = transformer_outputs[0]
-        print('hidden_states', hidden_states.shape)
-        lm_logits = self.lm_head(hidden_states)
+        sequence_outputs = self.dropouts(hidden_states)
 
-        masked_lm_loss = None
+        logits = self.classifier(sequence_outputs[:, 0, :].view(-1, 768))
+
         if labels is not None:
-            loss = F.cross_entropy(lm_logits.view(-1, lm_logits.size(-1)), labels.view(-1), reduction='none')
-            loss = loss.view(labels.size(0), labels.size(1))
-            label_size = torch.sum(labels.ne(-100), dim=1).type_as(loss)
-            masked_lm_loss = torch.sum(loss) / torch.sum(label_size)
-            ppl_value = torch.exp(torch.mean(torch.sum(loss, dim=1).float() / label_size.float()))
+            loss_func = nn.CrossEntropyLoss()
+            loss = loss_func(logits.view(-1, self.num_labels), labels.view(-1))
 
-        if not self.training and not validation: # inference
-            if not return_dict:
-                output = (lm_logits,) + transformer_outputs[1:]
-                return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
+            return TokenClassifierOutput(loss=loss, logits=logits, hidden_states=sequence_outputs.hidden_states,
+                                         attentions=sequence_outputs.attentions)
 
-            return CausalLMOutputWithCrossAttentions(
-                loss=masked_lm_loss,
-                logits=lm_logits,
-                past_key_values=transformer_outputs.past_key_values,
-                hidden_states=transformer_outputs.hidden_states,
-                attentions=transformer_outputs.attentions,
-                cross_attentions=transformer_outputs.cross_attentions,
-            )
-
-        elif self.training: # training
-            assert not validation
-            res = {'all': masked_lm_loss, 'ppl': ppl_value, }
-            return res
-
-        else: # validation
-            assert not self.training
-            return loss, label_size
-    
     @torch.no_grad()
     def generate(
         self,
