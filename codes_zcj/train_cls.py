@@ -269,6 +269,7 @@ metric = load_metric("f1")
 
 num_training_steps = args.num_epochs * len(train_dataloader)
 progress_bar_train = tqdm.tqdm(range(num_training_steps))
+progress_bar_eval = tqdm.tqdm(range(num_training_steps))
 lr_scheduler = get_linear_schedule_with_warmup(
     optimizer=optimizer,
     num_warmup_steps=0,
