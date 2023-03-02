@@ -298,6 +298,7 @@ while True:
         optimizer.step()
         lr_scheduler.step()
         optimizer.zero_grad()
+        print('counter', counter)
         progress_bar_train.update(1)
 # if args.local_rank == -1 or get_rank() == 0:
 #     if pbar is not None:
