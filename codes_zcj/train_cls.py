@@ -220,8 +220,9 @@ optimizer_grouped_parameters = [
     {'params': [p for n, p in param_optimizer if p.requires_grad and not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
     {'params': [p for n, p in param_optimizer if p.requires_grad and any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
 ]
+optimizer = AdamW(model.parameters(), lr = 5e-5 )
 
-optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate,)
+# optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate,)
 scheduler = get_linear_schedule_with_warmup(
     optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=args.num_optim_steps
 )
