@@ -31,6 +31,7 @@ class Model(BaseModel, GPT2LMHeadModel):
         attention_mask=None,
         past_key_values=None,
         labels=None,
+        dev = None,
         use_cache=None,
         return_dict=None,
         **kwargs
@@ -59,7 +60,7 @@ class Model(BaseModel, GPT2LMHeadModel):
 
         if labels is not None:
             loss_func = nn.CrossEntropyLoss()
-            loss = loss_func(logits.view(-1, self.num_labels), labels.view(-1))
+            loss = loss_func(logits.view(-1, self.num_labels), dev.view(-1))
 
             return TokenClassifierOutput(loss=loss, logits=logits, hidden_states=sequence_outputs.hidden_states,
                                          attentions=sequence_outputs.attentions)
