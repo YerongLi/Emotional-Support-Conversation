@@ -256,13 +256,22 @@ global_step = 0
 step = 0
 epoch = 0
 
-if args.local_rank != -1:
-    n_gpu = 1
-if args.local_rank == -1 or get_rank() == 0:
-    if args.pbar:
-        pbar = tqdm.tqdm(total=args.num_optim_steps, desc=f"training")
-    else:
-        pbar = None
+# if args.local_rank != -1:
+#     n_gpu = 1
+# if args.local_rank == -1 or get_rank() == 0:
+#     if args.pbar:
+#         pbar = tqdm.tqdm(total=args.num_optim_steps, desc=f"training")
+#     else:
+#         pbar = None
+
+num_training_steps = args.num_epochs * len(train_dataloader)
+progress_bar_train = tqdm.tqdm(range(num_training_steps))
+lr_scheduler = get_linear_schedule_with_warmup(
+    optimizer=optimizer,
+    num_warmup_steps=0,
+    num_training_steps=num_training_steps,
+
+)
 
 for epoch in range(args.num_epochs):
     model.train()
@@ -272,14 +281,7 @@ for epoch in range(args.num_epochs):
     if DEBUG : counter = 0
     if DEBUG: train_dataloader = list(train_dataloader)[:10]
 
-    num_training_steps = args.num_epochs * len(train_dataloader)
-    progress_bar_train = tqdm.tqdm(range(num_training_steps))
-    lr_scheduler = get_linear_schedule_with_warmup(
-        optimizer=optimizer,
-        num_warmup_steps=0,
-        num_training_steps=num_training_steps,
 
-    )
     for batch in train_dataloader:
         if DEBUG: counter+= 1
         if DEBUG and counter > 10: break
