@@ -62,7 +62,7 @@ class Model(BaseModel, GPT2LMHeadModel):
             loss_func = nn.CrossEntropyLoss()
             print(logits.view(-1, self.num_labels))
             print(dev.view(-1))
-            loss = loss_func(logits.view(-1, self.num_labels), dev.view(-1))
+            loss = loss_func(logits.view(-1, self.num_labels), dev.view(-1).type(torch.LongTensor))
 
             return TokenClassifierOutput(loss=loss, logits=logits, hidden_states=sequence_outputs.hidden_states,
                                          attentions=sequence_outputs.attentions)
