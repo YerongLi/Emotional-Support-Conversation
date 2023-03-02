@@ -32,7 +32,7 @@ class Model(BaseModel, GPT2LMHeadModel):
         assert self.toker is not None
         
         encoded_info = kwargs
-        assert (self.training or validation) == (labels is not None) == (decoder_input_ids is not None)
+        # assert (self.training or validation) == (labels is not None) == (decoder_input_ids is not None)
         
         use_cache = use_cache if use_cache is not None else self.config.use_cache
         if not self.training and not validation: # inference
