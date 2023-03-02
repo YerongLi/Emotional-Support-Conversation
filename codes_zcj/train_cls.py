@@ -270,6 +270,8 @@ while True:
     n_token_real, n_token_total = 0, 0
     train_start_time_epoch = time.time()
     if DEBUG : counter = 0
+    if DEBUG: train_dataloader = list(train_dataloader)[:10]
+
     num_training_steps = args.num_epochs * len(train_dataloader)
     progress_bar_train = tqdm.tqdm(range(num_training_steps))
     lr_scheduler = get_linear_schedule_with_warmup(
@@ -278,7 +280,6 @@ while True:
         num_training_steps=num_training_steps,
 
     )
-    if DEBUG: train_dataloader = list(train_dataloader)[:10]
     for batch in train_dataloader:
         if DEBUG: counter+= 1
         if DEBUG and counter > 10: break
