@@ -278,6 +278,7 @@ while True:
         num_training_steps=num_training_steps,
 
     )
+    if DEBUG: train_dataloader = list(train_dataloader)[:10]
     for batch in train_dataloader:
         if DEBUG: counter+= 1
         if DEBUG and counter > 10: break
