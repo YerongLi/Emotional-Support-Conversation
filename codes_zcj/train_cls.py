@@ -264,7 +264,7 @@ if args.local_rank == -1 or get_rank() == 0:
     else:
         pbar = None
 
-while True:
+for epoch in range(args.num_epochs):
     model.train()
     (tr_loss, tr_ppl, mean_ppl, nb_tr_examples, nb_tr_steps) = 0.0, 0.0, 0.0, 0, 0
     n_token_real, n_token_total = 0, 0
