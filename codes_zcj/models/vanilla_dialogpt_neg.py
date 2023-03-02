@@ -17,7 +17,12 @@ class Model(BaseModel, GPT2LMHeadModel):
     def __init__(self, config: GPT2Config, num_labels=2):
         super().__init__(config)
         self.dropouts = nn.Dropout(0.1)
+        self.linear1 = nn.Linear(512, 240)
+        self.linear1 = nn.Linear(240, 12)
+
+        self.dropouts1 = nn.Dropout(0.2)
         self.classifier = nn.Linear(768, num_labels)
+
         self.num_labels = num_labels
 
     def forward(
