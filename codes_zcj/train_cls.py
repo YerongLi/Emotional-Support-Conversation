@@ -271,7 +271,7 @@ if DEBUG:
     train_dataloader = list(train_dataloader)
     tmp = []
     for batch in train_dataloader:
-        l = set(batch['dev'].to('cpu'))
+        l = set(batch['dev'].to('cpu').numpy())
         print(l)
 
 
