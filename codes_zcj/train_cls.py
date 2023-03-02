@@ -283,12 +283,9 @@ for epoch in range(args.num_epochs):
     (tr_loss, tr_ppl, mean_ppl, nb_tr_examples, nb_tr_steps) = 0.0, 0.0, 0.0, 0, 0
     n_token_real, n_token_total = 0, 0
     train_start_time_epoch = time.time()
-    if DEBUG : counter = 0
 
 
     for batch in train_dataloader:
-        if DEBUG: counter+= 1
-        if DEBUG and counter > 10: break
         # activate new training mode
         batch = {k: v.to(device) if isinstance(v, Tensor) else v for k, v in batch.items()}
         batch.update({'global_step': global_step})
