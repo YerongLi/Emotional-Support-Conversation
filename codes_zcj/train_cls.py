@@ -267,7 +267,7 @@ epoch = 0
 #     else:
 #         pbar = None
 metric = load_metric("f1")
-if DEBUG: train_dataloader = list(train_dataloader)[:1000]
+if DEBUG: train_dataloader = list(train_dataloader)[:200]
 
 num_training_steps = args.num_epochs * len(train_dataloader)
 progress_bar_train = tqdm.tqdm(range(num_training_steps))
