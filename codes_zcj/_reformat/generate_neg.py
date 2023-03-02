@@ -99,6 +99,10 @@ data = []
 # with mp.Pool(processes=mp.cpu_count()) as pool:
 for e in tqdm.tqdm(original):
     data.append(process_data(e))
+# DEBUG
+counter = 0
+for item in data:
+
 # with mp.Pool(processes=1) as pool:
 #     for e in pool.imap(process_data, tqdm.tqdm(original, total=len(original))):
 #         data.append(e)
