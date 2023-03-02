@@ -316,7 +316,7 @@ for epoch in range(args.num_epochs):
 
         logits = outputs.logits
         predictions = torch.argmax(logits, dim=-1)
-        print(predictions, batch['dev'])
+        # print(predictions, batch['dev'])
         metric.add_batch(predictions=predictions, references=batch['dev'])
         progress_bar_eval.update(1)
     print(metric.compute())
