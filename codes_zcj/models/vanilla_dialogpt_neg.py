@@ -75,7 +75,7 @@ class Model(BaseModel, GPT2LMHeadModel):
 
         sequence_outputs = self.dropout_cls(hidden_states4)
 
-        logits = self.classifier(sequence_outputs[:, 0, :].view(-1, 768))
+        logits = self.classifier(sequence_outputs[:, 0, :].view(-1, 32))
 
         if labels is not None:
             loss_func = nn.CrossEntropyLoss()
