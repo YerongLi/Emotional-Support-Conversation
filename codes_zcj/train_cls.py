@@ -303,6 +303,7 @@ for epoch in range(args.num_epochs):
         if n_gpu > 1:
             loss = loss.mean()
         loss.backward()
+        print(loss.item())
 
         optimizer.step()
         lr_scheduler.step()
