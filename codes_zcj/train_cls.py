@@ -289,7 +289,7 @@ for epoch in range(args.num_epochs):
     (tr_loss, tr_ppl, mean_ppl, nb_tr_examples, nb_tr_steps) = 0.0, 0.0, 0.0, 0, 0
     n_token_real, n_token_total = 0, 0
     train_start_time_epoch = time.time()
-
+    acc_loss = 0.0
     for batch in train_dataloader:
         # activate new training mode
         batch = {k: v.to(device) if isinstance(v, Tensor) else v for k, v in batch.items()}
@@ -303,13 +303,13 @@ for epoch in range(args.num_epochs):
         if n_gpu > 1:
             loss = loss.mean()
         loss.backward()
-        print(loss.item())
+        acc_loss+= loss.item()
 
         optimizer.step()
         lr_scheduler.step()
         optimizer.zero_grad()
         progress_bar_train.update(1)
-
+    print(f'training loss {acc_loss}')
     for batch in train_dataloader:
         batch = {k: v.to(device) for k, v in batch.items()}
         with torch.no_grad():
