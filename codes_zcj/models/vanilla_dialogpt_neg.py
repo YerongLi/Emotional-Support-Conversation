@@ -16,12 +16,21 @@ from .PARAMS import SAMPLE, TEMPERATURE
 class Model(BaseModel, GPT2LMHeadModel):
     def __init__(self, config: GPT2Config, num_labels=2):
         super().__init__(config)
-        self.dropouts = nn.Dropout(0.1)
-        self.linear1 = nn.Linear(512, 240)
-        self.linear1 = nn.Linear(240, 12)
 
-        self.dropouts1 = nn.Dropout(0.2)
-        self.classifier = nn.Linear(768, num_labels)
+        self.dropout1 = nn.Dropout(0.5)
+        self.hidden1 = nn.Linear(768, 512)
+
+        self.dropout2 = nn.Dropout(0.3)
+        self.hidden2 = nn.Linear(512, 256)
+
+        self.dropout3 = nn.Dropout(0.4)
+        self.hidden3 = nn.Linear(256, 128)
+
+        self.dropout4 = nn.Dropout(0.2)
+        self.hidden4 = nn.Linear(128, 32)
+
+        self.dropout_cls = nn.Dropout(0.2)
+        self.classifier = nn.Linear(32, num_labels)
 
         self.num_labels = num_labels
 
@@ -51,8 +60,20 @@ class Model(BaseModel, GPT2LMHeadModel):
             use_cache=use_cache,
             return_dict=return_dict,
         )
-        hidden_states = transformer_outputs[0]
-        sequence_outputs = self.dropouts(hidden_states)
+        hidden_states0 = transformer_outputs[0]
+        hidden_states1 = self.dropout1(hidden_states0)
+        hidden_states1 = self.hidden1(hidden_states1)
+
+        hidden_states2 = self.dropout2(hidden_states1)
+        hidden_states2 = self.hidden1(hidden_states2)
+
+        hidden_states3 = self.dropout3(hidden_states2)
+        hidden_states3 = self.hidden1(hidden_states3)
+
+        hidden_states4 = self.dropout4(hidden_states3)
+        hidden_states4 = self.hidden1(hidden_states4)
+
+        sequence_outputs = self.dropout_cls(hidden_states4)
 
         logits = self.classifier(sequence_outputs[:, 0, :].view(-1, 768))
 

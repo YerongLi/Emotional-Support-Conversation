@@ -83,7 +83,7 @@ with open(data_path, 'wb') as file:
     for item in processed_data:
         if item.dev == 1 or counter != 0:
             tmp.append(item)
-            counter = (counter + 1) % 7
+            counter = (counter + 1) % 8
     processed_data = tmp
     for item in processed_data:
         print(item.dev)
