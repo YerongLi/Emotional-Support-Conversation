@@ -29,7 +29,7 @@ class Model(BaseModel, GPT2LMHeadModel):
         self.dropout4 = nn.Dropout(0.2)
         self.hidden4 = nn.Linear(128, 32)
 
-        self.dropout_cls = nn.Dropout(0.2)
+        self.dropout_cls = nn.Dropout(0.1)
         self.classifier = nn.Linear(32, num_labels)
 
         self.num_labels = num_labels
@@ -65,13 +65,13 @@ class Model(BaseModel, GPT2LMHeadModel):
         hidden_states1 = self.hidden1(hidden_states1)
 
         hidden_states2 = self.dropout2(hidden_states1)
-        hidden_states2 = self.hidden1(hidden_states2)
+        hidden_states2 = self.hidden2(hidden_states2)
 
         hidden_states3 = self.dropout3(hidden_states2)
-        hidden_states3 = self.hidden1(hidden_states3)
+        hidden_states3 = self.hidden3(hidden_states3)
 
         hidden_states4 = self.dropout4(hidden_states3)
-        hidden_states4 = self.hidden1(hidden_states4)
+        hidden_states4 = self.hidden4(hidden_states4)
 
         sequence_outputs = self.dropout_cls(hidden_states4)
 
