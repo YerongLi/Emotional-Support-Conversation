@@ -266,7 +266,7 @@ epoch = 0
 #         pbar = tqdm.tqdm(total=args.num_optim_steps, desc=f"training")
 #     else:
 #         pbar = None
-metric = load("f1", "accuracy")
+metric = load("accuracy","f1")
 if DEBUG:
     train_dataloader = list(train_dataloader)
     tmp = []
