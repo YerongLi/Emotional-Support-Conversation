@@ -284,7 +284,7 @@ lr_scheduler = get_linear_schedule_with_warmup(
     num_training_steps=num_training_steps,
 
 )
-
+logs = []
 for epoch in range(args.num_epochs):
     model.train()
     (tr_loss, tr_ppl, mean_ppl, nb_tr_examples, nb_tr_steps) = 0.0, 0.0, 0.0, 0, 0
@@ -323,7 +323,10 @@ for epoch in range(args.num_epochs):
         f1.add_batch(predictions=predictions, references=batch['dev'])
 
         progress_bar_eval.update(1)
-        metric = {'accuracy' : accuracy.compute(), 'f1': f1.compute()}
+    metric = dict()
+    metric.update(accuracy.compute())
+    metric.update(f1.compute())
+    logs.append((acc_loss, metric))
     print(metric)
 # if args.local_rank == -1 or get_rank() == 0:
 #     if pbar is not None:
