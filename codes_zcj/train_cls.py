@@ -266,7 +266,8 @@ epoch = 0
 #         pbar = tqdm.tqdm(total=args.num_optim_steps, desc=f"training")
 #     else:
 #         pbar = None
-metric = load("accuracy","f1")
+accuracy = load("accuracy")
+f1 = load('f1')
 if DEBUG:
     train_dataloader = list(train_dataloader)
     tmp = []
@@ -318,9 +319,12 @@ for epoch in range(args.num_epochs):
         logits = outputs.logits
         predictions = torch.argmax(logits, dim=-1)
         # print(predictions, batch['dev'])
-        metric.add_batch(predictions=predictions, references=batch['dev'])
+        accuracy.add_batch(predictions=predictions, references=batch['dev'])
+        f1.add_batch(predictions=predictions, references=batch['dev'])
+
         progress_bar_eval.update(1)
-    print(metric.compute())
+        metric = {'accuracy' : accuracy.compute(), 'f1': f1.compute()}
+    print(metric)
 # if args.local_rank == -1 or get_rank() == 0:
 #     if pbar is not None:
 #         pbar.close()
