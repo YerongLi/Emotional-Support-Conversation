@@ -14,7 +14,7 @@ import time
 import torch
 import tqdm
 
-from datasets import load_metric
+from evaluate import load
 from torch import Tensor
 from torch.distributed import get_rank, get_world_size
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
@@ -266,7 +266,7 @@ epoch = 0
 #         pbar = tqdm.tqdm(total=args.num_optim_steps, desc=f"training")
 #     else:
 #         pbar = None
-metric = load_metric("f1")
+metric = load("f1", "accuracy")
 if DEBUG:
     train_dataloader = list(train_dataloader)
     tmp = []
