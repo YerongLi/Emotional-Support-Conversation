@@ -22,6 +22,7 @@ from transformers.trainer_utils import set_seed
 
 from inputters import inputters
 from os.path import join
+import pickle
 from utils.building_utils import boolean_string, build_model, deploy_model
 from utils import DEBUG
 from utils.distributed import all_reduce_and_rescale_tensors, all_gather_list
@@ -327,6 +328,7 @@ for epoch in range(args.num_epochs):
     metric.update(accuracy.compute())
     metric.update(f1.compute())
     logs.append((acc_loss, metric))
+    pickle.dump(logs, open('logs.pkl', 'wb'))
     print(metric)
 # if args.local_rank == -1 or get_rank() == 0:
 #     if pbar is not None:
