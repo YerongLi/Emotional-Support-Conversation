@@ -267,7 +267,8 @@ epoch = 0
 #         pbar = tqdm.tqdm(total=args.num_optim_steps, desc=f"training")
 #     else:
 #         pbar = None
-accuracy = load("accuracy")
+precision = load("precision")
+recall = load("recall")
 f1 = load('f1')
 if DEBUG:
     train_dataloader = list(train_dataloader)
@@ -320,12 +321,14 @@ for epoch in range(args.num_epochs):
         logits = outputs.logits
         predictions = torch.argmax(logits, dim=-1)
         # print(predictions, batch['dev'])
-        accuracy.add_batch(predictions=predictions, references=batch['dev'])
+        precision.add_batch(predictions=predictions, references=batch['dev'])
+        recall.add_batch(predictions=predictions, references=batch['dev'])
         f1.add_batch(predictions=predictions, references=batch['dev'])
 
         progress_bar_eval.update(1)
     metric = dict()
-    metric.update(accuracy.compute())
+    metric.update(precision.compute())
+    metric.update(recall.compute())
     metric.update(f1.compute())
     logs.append((acc_loss, metric))
     pickle.dump(logs, open('logs.pkl', 'wb'))

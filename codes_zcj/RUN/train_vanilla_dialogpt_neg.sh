@@ -8,8 +8,8 @@ CUDA_VISIBLE_DEVICES=2,3,4,5,6,7 python train_cls.py \
     --train_batch_size 6\
     --gradient_accumulation_steps 1 \
     --eval_batch_size 6 \
-    --learning_rate 2e-4 \
-    --num_epochs 100 \
+    --learning_rate 5e-4 \
+    --num_epochs 30 \
     --warmup_steps 100 \
     --fp16 false \
     --loss_scale 0.0 \
